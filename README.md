@@ -1,36 +1,45 @@
 # jenkinsfile
- using hostname.
-node {
+  pipeline {
 
-    withMaven(maven:'maven') {
+agent {label 'slave'}
+stages {
+    stage ('Compile Stage') {
 
-        stage('Checkout') {
-            git url: 'https://github.com/piomin/sample-spring-microservices.git', credentialsId: 'github-piomin', branch: 'master'
+        steps {
+           echo "Hello world"
+            
         }
+    }
+ stage ('build Stage') {
+        
+            steps {
+             echo "Hello xghcworfslsamd"
+            }
+        }	
 
-        stage('Build') {
-            sh 'mvn clean install'
-
-            def pom = readMavenPom file:'pom.xml'
-            print pom.version
-            env.version = pom.version
+    stage ('Testing Stage') {
+        
+            steps {
+             echo "Hello worlsaddmd"
+            }
         }
-
-        stage('Image') {
-            dir ('account-service') {
-                def app = docker.build "localhost:5000/account-service:${env.version}"
-                app.push()
+	
+	
+    stage ('UAT Stage') {
+        
+            steps {
+             echo "Hello worlsamd"
             }
         }
 
-        stage ('Run') {
-            docker.image("localhost:5000/account-service:${env.version}").run('-p 2222:2222 -h account --name account --link discovery')
+
+    stage ('Deployment Stage') {
+        steps {
+	    node ('slave') {
+             echo "Hello worldsameesddr"
+	    }
         }
-
-        stage ('Final') {
-            build job: 'customer-service-pipeline', wait: false
-        }      
-
+	    
     }
-
+}
 }
